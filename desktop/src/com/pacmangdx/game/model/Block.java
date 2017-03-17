@@ -1,10 +1,11 @@
-package com.pacmangdx.game;
+package com.pacmangdx.game.model;
 
-import com.badlogic.gdx.Game;
-import com.pacmangdx.game.screens.GameScreen;
+import java.awt.Point;
+import java.util.Objects;
 
-public class PacmanGDX extends Game {
-
+public class Block extends GameElement
+{
+	
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,12 +18,28 @@ public class PacmanGDX extends Game {
                      ##         #######  ########  ######## ####  ######
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-*/	
-	public PacmanGDX() {}
+*/
+	
+	public Block(Point p)
+	{
+		super(p, null);
+	}
 	
 	@Override
-	public void create ()
+	public boolean equals(Object o)
 	{
-		setScreen(new GameScreen());
+		if (this == o)
+			return true;
+		if (!(o instanceof Block))
+            return false;
+		
+		Block b = (Block) o;
+        return Objects.equals(this.position, b.position);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(this.position);
 	}
 }
