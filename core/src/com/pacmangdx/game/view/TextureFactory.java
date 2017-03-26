@@ -5,9 +5,9 @@ import java.util.Objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.pacmangdx.game.model.Block;
+import com.pacmangdx.game.model.Direction;
 import com.pacmangdx.game.model.GameElement;
 import com.pacmangdx.game.model.Pacman;
-import com.pacmangdx.game.model.Pacman.Direction;
 
 public class TextureFactory
 {
@@ -25,6 +25,8 @@ public class TextureFactory
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
+	private static TextureFactory INSTANCE = new TextureFactory();
+	
 	private Texture pacman_up;
 	private Texture pacman_down;
 	private Texture pacman_left;
@@ -40,22 +42,21 @@ public class TextureFactory
 		this.bloc = new Texture(Gdx.files.internal("bloc.png"));
 	}
 	
-	private static TextureFactory INSTANCE = new TextureFactory();
-	
 	private Texture getTexturePacman(Direction direction)
 	{
-		// les directions verticales sont toujours inversées, penser à changer ça
-		
-		if (direction == Direction.DOWN)
+		switch (direction)
+		{
+		case UP :
 			return pacman_up;
-		if (direction == Direction.UP)
+		case DOWN :
 			return pacman_down;
-		if (direction == Direction.LEFT)
+		case LEFT :
 			return pacman_left;
-		if (direction == Direction.RIGHT)
+		case RIGHT :
+		case NONE :
+		default :
 			return pacman_right;
-
-		return pacman_right;
+		}
 	}
 	
 	private Texture getTextureBloc()

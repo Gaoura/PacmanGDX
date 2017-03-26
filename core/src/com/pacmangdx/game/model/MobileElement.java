@@ -1,10 +1,10 @@
 package com.pacmangdx.game.model;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 
-public abstract class GameElement
+public class MobileElement extends GameElement
 {
-	
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,17 +17,16 @@ public abstract class GameElement
    ##        ##     ##  #######     ##    ########  ######     ##    ######## ########
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-*/	
-	
-	protected Point position;
-	protected World world;
-	
-	protected GameElement(Point p, World w)
+*/
+	protected Direction direction;
+	protected float distance_par_sec;
+
+	protected MobileElement(Point2D.Float p, World w)
 	{
-		this.position = p;
-		this.world = w;
+		super(p, w);
+		this.direction = Direction.NONE;
 	}
-	
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,14 +40,22 @@ public abstract class GameElement
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
-	
-	public Point getPosition()
+
+	public void setDirection(Direction d)
 	{
-		return this.position;
+		this.direction = d;
 	}
 
-	public void setPosition(Point position)
+	public Direction getDirection()
 	{
-		this.position = position;
+		return this.direction;
+	}
+
+	public float getDistanceParSec() {
+		return distance_par_sec;
+	}
+
+	public void setDistanceParSec(float distance_par_sec) {
+		this.distance_par_sec = distance_par_sec;
 	}
 }

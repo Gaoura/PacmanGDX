@@ -1,12 +1,8 @@
 package com.pacmangdx.game.controllers;
 
-import java.awt.Point;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.pacmangdx.game.model.Pacman;
-import com.pacmangdx.game.model.Pacman.Direction;
-import com.pacmangdx.game.model.World;
+import com.pacmangdx.game.model.Direction;
 
 public class ClavierEcouteur implements InputProcessor
 {
@@ -25,9 +21,7 @@ public class ClavierEcouteur implements InputProcessor
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 	
-	private World world;
-	private Pacman pacman;
-	private Direction derniere_commande;
+	private PacmanController pacman;
 	
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,15 +37,9 @@ public class ClavierEcouteur implements InputProcessor
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 	
-	public ClavierEcouteur(World w)
+	public ClavierEcouteur(PacmanController p)
 	{
-		this.world = w;
-		this.pacman = this.world.getPacman();
-	}
-
-	public Direction getDerniere_commande()
-	{
-		return this.derniere_commande;
+		this.pacman = p;
 	}
 
 	@Override
@@ -61,47 +49,50 @@ public class ClavierEcouteur implements InputProcessor
 		{
 		case Keys.UP :
 		case Keys.Z :
-			this.derniere_commande = Direction.UP;
+			this.pacman.setDerniereCommande(Direction.UP);
 			break;
 		case Keys.DOWN :
 		case Keys.S :
-			this.derniere_commande = Direction.DOWN;
+			this.pacman.setDerniereCommande(Direction.DOWN);
 			break;
 		case Keys.LEFT :
 		case Keys.Q :
-			this.derniere_commande = Direction.LEFT;
+			this.pacman.setDerniereCommande(Direction.LEFT);
 			break;
 		case Keys.RIGHT :
 		case Keys.D :
-			this.derniere_commande = Direction.RIGHT;
+			this.pacman.setDerniereCommande(Direction.RIGHT);
 			break;
 		default :
 			return false;
 		}
-		update();
+		
+		//update();
 		return true;
 	}
 
-	// update la position du pacman
-	private void update()
+	// verifie qu'il n'y aura pas d'obstacle pour changer la direction de pacman
+	/*private void update()
 	{
-		Point p = this.pacman.getPosition();
-		int x = p.x;
-		int y = p.y;
+		Point2D.Float p = new Point2D.Float(this.pacman.getPosition().x, this.pacman.getPosition().y);
+		float x = p.x;
+		float y = p.y;
 		
 		switch (this.derniere_commande)
 		{
 		case UP :
-			p = new Point(x, y - 1);
+			p = new Point2D.Float(x, y + 1);
 			break;
 		case DOWN :
-			p = new Point(x + 0, y + 1);
+			p = new Point2D.Float(x + 0, y - 1);
 			break;
 		case LEFT :
-			p = new Point(x - 1, y + 0);
+			p = new Point2D.Float(x - 1, y + 0);
 			break;
 		case RIGHT :
-			p = new Point(x + 1, y + 0);
+			p = new Point2D.Float(x + 1, y + 0);
+			break;
+		default:
 			break;
 		}
 		this.pacman.setDirection(this.derniere_commande);
@@ -118,7 +109,7 @@ public class ClavierEcouteur implements InputProcessor
 			this.pacman.setPosition(p);
 		}
 
-	}
+	}*/
 	
 	
 

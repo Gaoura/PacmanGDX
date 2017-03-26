@@ -1,27 +1,10 @@
 package com.pacmangdx.game.model;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 
-public class Pacman extends GameElement
+public class Pacman extends MobileElement
 {
-	
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////
 
-                ########  ########  #### ##     ##    ###    ######## ########
-                ##     ## ##     ##  ##  ##     ##   ## ##      ##    ##
-                ##     ## ##     ##  ##  ##     ##  ##   ##     ##    ##
-                ########  ########   ##  ##     ## ##     ##    ##    ######
-                ##        ##   ##    ##   ##   ##  #########    ##    ##
-                ##        ##    ##   ##    ## ##   ##     ##    ##    ##
-                ##        ##     ## ####    ###    ##     ##    ##    ########
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-*/
-	
-	private Direction dir;
-	public enum Direction{UP, DOWN, LEFT, RIGHT;} 
-	
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,26 +18,10 @@ public class Pacman extends GameElement
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
-	
-	public Pacman(Point p, World w) 
+
+	public Pacman(Point2D.Float p, World w)
 	{
 		super(p, w);
-		this.dir = null;
-	}
-	
-	public void setDirection(Direction d)
-	{
-		this.dir = d;
-	}
-	
-	public void update(float s)
-	{
-		
-	}
-
-	public Direction getDirection()
-	{
-		return this.dir;
+		this.distance_par_sec = 3f;
 	}
 }
-

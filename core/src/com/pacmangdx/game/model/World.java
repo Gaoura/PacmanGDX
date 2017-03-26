@@ -1,6 +1,6 @@
 package com.pacmangdx.game.model;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.files.FileHandle;
 
 public class World implements Iterable<GameElement>
 {
-	
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,15 +47,18 @@ public class World implements Iterable<GameElement>
 	public World()
 	{
 		this.laby = new Maze(this);
-		Point p = newPacman();
+		Point2D.Float p = newPacman();
 		if (p != null)
-			this.pac = new Pacman(p, this);			
+		{
+			this.pac = new Pacman(p, this);
+		}
+
 		else
-			System.out.println("Erreur création Pacman");
-		
+			System.out.println("Erreur crÃ©ation Pacman");
+
 	}
-	
-	public Point newPacman()
+
+	public Point2D.Float newPacman()
 	{
 		FileHandle fh = Gdx.files.internal("map2.txt");
 		BufferedReader br = new BufferedReader(fh.reader());
@@ -73,49 +76,49 @@ public class World implements Iterable<GameElement>
 				int i;
 				for (i = 0; i < line.length(); i++)
 					if (line.charAt(i) == 'C')
-						return new Point(i, j);
+						return new Point2D.Float(i, list.size() - 1 - j);
 				j++;
-			}	
+			}
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public int getHeight()
 	{
 		return laby.getHeight();
-		
+
 	}
-	
+
 	public int getWidth()
 	{
 		return laby.getWidth();
-		
+
 	}
-	
+
 	public Maze getMaze()
 	{
 		return this.laby;
 	}
-	
+
 	public Pacman getPacman()
 	{
 		return this.pac;
 	}
-	
+
 	@Override
 	public Iterator<GameElement> iterator()
 	{
 		return  new Iterator<GameElement>()
-				{					
+				{
 					private int i = 0;
 					private Iterator<GameElement> iterator = laby.iterator();
-					
-					@Override
+
+					/*@Override
 					public boolean hasNext()
 					{
 						// si on a pas encore retourner pacman
@@ -124,22 +127,54 @@ public class World implements Iterable<GameElement>
 						// sinon on regarde si laby a un suivant
 						else
 							return iterator.hasNext();
+					}*/
+
+					@Override
+					public boolean hasNext()
+					{
+						// on regarde si laby a un suivant
+						if (iterator.hasNext())
+							return iterator.hasNext();
+						else
+							// sinon si on n'a pas encore retourner pacman
+							if (i == 0)
+								return pac != null;
+							else
+								return false;
 					}
-					
+
+					/*@Override
+					public GameElement next()
+					{
+						if (!hasNext())
+							throw new NoSuchElementException("Plus de GameElement");
+
+						switch (i)
+						{
+						case 0 :
+							i++;
+							return pac.pacman;
+						default : return iterator.next();
+						}
+					}*/
+
 					@Override
 					public GameElement next()
 					{
 						if (!hasNext())
 							throw new NoSuchElementException("Plus de GameElement");
-						
-						switch (i)
-						{
-						case 0 :
-							i++;
-							return pac;
-						default : return iterator.next();
-						}
+
+						if (iterator.hasNext())
+							return iterator.next();
+						else
+							if (i == 0)
+							{
+								i++;
+								return pac;
+							}
+						return null;
 					}
 				};
 	}
+
 }

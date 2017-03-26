@@ -1,9 +1,9 @@
 package com.pacmangdx.game.model;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Objects;
 
-public class Block extends GameElement
+public class Block extends MobileElement
 {
 	
 /*
@@ -20,7 +20,7 @@ public class Block extends GameElement
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 	
-	public Block(Point p)
+	public Block(Point2D.Float p)
 	{
 		super(p, null);
 	}
