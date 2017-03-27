@@ -1,14 +1,10 @@
-package com.pacmangdx.game.screens;
+package com.pacmangdx.game.model;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.pacmangdx.game.model.World;
-import com.pacmangdx.game.view.WorldRenderer;
+import java.awt.geom.Point2D.Float;
+import java.util.Objects;
 
-public class GameScreen implements Screen
+public class PacGomme extends GameElement
 {
-
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,9 +19,8 @@ public class GameScreen implements Screen
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 
-	private World world;
-	private WorldRenderer renderer;
-	
+	private boolean mangee;
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,42 +34,37 @@ public class GameScreen implements Screen
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
-
-	public GameScreen()
+	public PacGomme(Float p, World w)
 	{
-		this.world = new World();
-		this.renderer = new WorldRenderer(this.world);
+		super(p, w);
+	}
+
+	public boolean estMangee()
+	{
+		return this.mangee;
+	}
+
+	public void seFaitManger()
+	{
+		this.mangee = true;
 	}
 
 	@Override
-	public void show() {}
-
-	@Override
-	public void render(float delta)
+	public boolean equals(Object o)
 	{
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		this.renderer.render(delta);
+		if (this == o)
+			return true;
+		if (!(o instanceof PacGomme))
+            return false;
+
+		PacGomme p = (PacGomme) o;
+        return Objects.equals(this.position, p.position);
 	}
 
 	@Override
-	public void resize(int width, int height)
+	public int hashCode()
 	{
-		this.renderer.resize(width, height);
+		return Objects.hash(this.position);
 	}
 
-	@Override
-	public void pause() {}
-
-	@Override
-	public void resume() {}
-
-	@Override
-	public void hide() {}
-
-	@Override
-	public void dispose()
-	{
-		this.renderer.dispose();
-	}
 }

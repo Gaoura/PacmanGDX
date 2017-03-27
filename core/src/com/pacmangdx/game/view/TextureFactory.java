@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.pacmangdx.game.model.Block;
 import com.pacmangdx.game.model.Direction;
 import com.pacmangdx.game.model.GameElement;
+import com.pacmangdx.game.model.PacGomme;
 import com.pacmangdx.game.model.Pacman;
 
 public class TextureFactory
@@ -27,43 +28,56 @@ public class TextureFactory
 */
 	private static TextureFactory INSTANCE = new TextureFactory();
 	
-	private Texture pacman_up;
-	private Texture pacman_down;
-	private Texture pacman_left;
-	private Texture pacman_right;
+	private PacmanDisplayer pacman_displayer;
+	
+	private Texture pacman[];
+	
 	private Texture bloc;
+	private Texture pac_gomme;
+	private Texture vide;
 	
 	private TextureFactory()
-	{
-		this.pacman_up = new Texture(Gdx.files.internal("pacmanUp.png"));
-		this.pacman_down = new Texture(Gdx.files.internal("pacmanDown.png"));
-		this.pacman_left = new Texture(Gdx.files.internal("pacmanLeft.png"));
-		this.pacman_right = new Texture(Gdx.files.internal("pacmanRight.png"));
+	{	
+		this.pacman = new Texture[8];
+		
+		this.pacman_displayer = new PacmanDisplayer(this.pacman);
+			
+		this.pacman[0] = new Texture(Gdx.files.internal("pacmanLeft.png"));
+		this.pacman[1] = new Texture(Gdx.files.internal("pacmanLeft-2.png"));
+		this.pacman[2] = new Texture(Gdx.files.internal("pacmanRight.png"));
+		this.pacman[3] = new Texture(Gdx.files.internal("pacmanRight-2.png"));
+		this.pacman[4] = new Texture(Gdx.files.internal("pacmanDown.png"));
+		this.pacman[5] = new Texture(Gdx.files.internal("pacmanDown-2.png"));
+		this.pacman[6] = new Texture(Gdx.files.internal("pacmanUp.png"));
+		this.pacman[7] = new Texture(Gdx.files.internal("pacmanUp-2.png"));
+		
 		this.bloc = new Texture(Gdx.files.internal("bloc.png"));
+		this.pac_gomme = new Texture(Gdx.files.internal("pellet.png"));
+		this.vide = new Texture(Gdx.files.internal("dark.png"));
+		
+		
 	}
 	
-	private Texture getTexturePacman(Direction direction)
+	private Texture getTexturePacman(Pacman p, float delta)
 	{
-		switch (direction)
-		{
-		case UP :
-			return pacman_up;
-		case DOWN :
-			return pacman_down;
-		case LEFT :
-			return pacman_left;
-		case RIGHT :
-		case NONE :
-		default :
-			return pacman_right;
-		}
+		this.pacman_displayer.augmenterCompteur(delta);
+		return this.pacman_displayer.getTexturePacman(p);
+		
 	}
 	
 	private Texture getTextureBloc()
 	{
-		return bloc;
+		return this.bloc;
 	}
 
+	private Texture getTexturePacGomme(PacGomme ge)
+	{
+		if (!ge.estMangee())
+			return this.pac_gomme;
+		else 
+			return this.vide;
+	}
+	
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,12 +97,17 @@ public class TextureFactory
 		return INSTANCE;
 	}
 	
-	public Texture getTexture(GameElement ge)
+	public Texture getTexture(GameElement ge, float delta)
 	{
 		if (Objects.hashCode(ge.getClass()) == Objects.hashCode(Pacman.class))
-			return this.getTexturePacman(((Pacman)ge).getDirection());
+			return this.getTexturePacman((Pacman)ge, delta);
+		
 		if (Objects.hashCode(ge.getClass()) == Objects.hashCode(Block.class))
 			return this.getTextureBloc();
+		
+		if (Objects.hashCode(ge.getClass()) == Objects.hashCode(PacGomme.class))
+			return this.getTexturePacGomme((PacGomme)ge);
+		
 		return null;
 	}
 }

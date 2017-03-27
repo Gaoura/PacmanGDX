@@ -67,7 +67,7 @@ public class WorldRenderer
 			for (GameElement ge : this.world)
 			{
 				this.spriteBatch.draw(
-					tf.getTexture(ge),
+					tf.getTexture(ge, delta),
 					(ge.getPosition().x * largeur),
 					(ge.getPosition().y * hauteur),
 					largeur,

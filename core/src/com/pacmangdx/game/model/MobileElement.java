@@ -51,11 +51,13 @@ public class MobileElement extends GameElement
 		return this.direction;
 	}
 
-	public float getDistanceParSec() {
+	public float getDistanceParSec()
+	{
 		return distance_par_sec;
 	}
 
-	public void setDistanceParSec(float distance_par_sec) {
+	public void setDistanceParSec(float distance_par_sec)
+	{
 		this.distance_par_sec = distance_par_sec;
 	}
 }

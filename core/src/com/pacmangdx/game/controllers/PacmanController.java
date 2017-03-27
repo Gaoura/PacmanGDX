@@ -2,9 +2,11 @@ package com.pacmangdx.game.controllers;
 
 import java.awt.geom.Point2D;
 
+import com.pacmangdx.game.model.Block;
 import com.pacmangdx.game.model.Direction;
 import com.pacmangdx.game.model.GameElement;
 import com.pacmangdx.game.model.Maze;
+import com.pacmangdx.game.model.PacGomme;
 import com.pacmangdx.game.model.Pacman;
 
 public class PacmanController
@@ -25,41 +27,15 @@ public class PacmanController
 */
 
 	private Direction derniere_commande;
-
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-                     ########  ##     ## ########  ##       ####  ######
-                     ##     ## ##     ## ##     ## ##        ##  ##    ##
-                     ##     ## ##     ## ##     ## ##        ##  ##
-                     ########  ##     ## ########  ##        ##  ##
-                     ##        ##     ## ##     ## ##        ##  ##
-                     ##        ##     ## ##     ## ##        ##  ##    ##
-                     ##         #######  ########  ######## ####  ######
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-*/
-
-	public Pacman pacman;
-
-	public PacmanController(Pacman pacman)
+	private Pacman pacman;
+	
+	/*
+	 * Gère le déplacement de Pacman et la collision avec un bloc
+	 * Return true s'il y a collision ou aucun movement de Pacman ou alignement de Pacman
+	 * Return false si Pacman s'est déplacé normalement
+	 */
+	private boolean detectionCollisionBloc(float delta)
 	{
-		this.pacman = pacman;
-		this.derniere_commande = Direction.NONE;//this.pacman.getDirection();
-	}
-
-
-	public void setDerniereCommande(Direction derniere_commande)
-	{
-		this.derniere_commande = derniere_commande;
-	}
-
-
-
-
-	public void update(float delta)
-	{
-
 		// une variable pour éviter de nombreux appels à la méthode getDirection()
 		Direction dir_actuelle = this.pacman.getDirection();
 
@@ -72,7 +48,7 @@ public class PacmanController
 		// et on veut changer pour la direction opposée
 		// dans les 2 cas on change juste la direction et on passe aux tests de collision
 		if (dir_actuelle == Direction.NONE
-			|| dir_actuelle.estDirectionOpposee(this.derniere_commande))
+				|| dir_actuelle.estDirectionOpposee(this.derniere_commande))
 		{
 			this.pacman.setDirection(this.derniere_commande);
 			dir_actuelle = this.derniere_commande;
@@ -188,7 +164,7 @@ public class PacmanController
 			intersec_case_suiv_dir_act_ordonnee += 1f;
 			break;
 		case NONE :
-			return;
+			return true;
 		default :
 			// on ne devrait jamais tomber dans ce cas-là
 			System.out.println("Erreur direction");
@@ -206,7 +182,7 @@ public class PacmanController
 				ge = labyrinthe.get(case_demande_abscisse, case_demande_ordonnee);
 
 				// si la case suivante est un obstacle
-				if (ge != null)
+				if (ge != null && ge instanceof Block)
 				{
 					// on ignore la demande
 					// et on regarde la case suivante dans la direction actuelle
@@ -214,17 +190,19 @@ public class PacmanController
 
 					// si c'est un obstacle, on passe la direction à NONE
 					// et on aligne le pacman
-					if (ge != null)
+					if (ge != null && ge instanceof Block)
 					{
 						p.x = alignement_abscisse;
 						p.y = alignement_ordonnee;
 						this.pacman.setDirection(Direction.NONE);
+						return true;
 					}
 					// sinon on peut avancer
 					else
 					{
 						p.x = nouv_position_abscisse;
 						p.y = nouv_position_ordonnee;
+						return false;
 					}
 				}
 				// sinon si la case suivante est vide
@@ -235,6 +213,7 @@ public class PacmanController
 					p.x = alignement_abscisse;
 					p.y = alignement_ordonnee;
 					this.pacman.setDirection(this.derniere_commande);
+					return true;
 				}
 			}
 			// sinon si on n'a aucune demande
@@ -245,17 +224,19 @@ public class PacmanController
 
 				// si c'est un obstacle, on passe la direction à NONE
 				// et on aligne le pacman
-				if (ge != null)
+				if (ge != null && ge instanceof Block)
 				{
 					p.x = alignement_abscisse;
 					p.y = alignement_ordonnee;
 					this.pacman.setDirection(Direction.NONE);
+					return true;
 				}
 				// sinon on peut avancer
 				else
 				{
 					p.x = nouv_position_abscisse;
 					p.y = nouv_position_ordonnee;
+					return false;
 				}
 			}
 		}
@@ -270,13 +251,17 @@ public class PacmanController
 
 				// si c'est un obstacle, on passe la direction à NONE
 				// et on ne bouge pas
-				if (ge != null)
+				if (ge != null && ge instanceof Block)
+				{
 					this.pacman.setDirection(Direction.NONE);
+					return true;
+				}
 				// sinon on peut avancer
 				else
 				{
 					p.x = nouv_position_abscisse;
 					p.y = nouv_position_ordonnee;
+					return false;
 				}
 			}
 			// sinon on peut avancer
@@ -284,23 +269,24 @@ public class PacmanController
 			{
 				p.x = nouv_position_abscisse;
 				p.y = nouv_position_ordonnee;
+				return false;
 			}
 		}
 
 
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////
+		/*
+		/////////////////////////////////////////////////////////////////////////////////////////////
 
-            ########  ######## ########    ###     ######  ########  #######
-            ##     ## ##       ##         ## ##   ##    ##    ##    ##     ##
-            ##     ## ##       ##        ##   ##  ##          ##    ##     ##
-            ########  ######   ######   ##     ## ##          ##    ##     ##
-            ##   ##   ##       ##       ######### ##          ##    ##     ##
-            ##    ##  ##       ##       ##     ## ##    ##    ##    ##     ##
-            ##     ## ######## ##       ##     ##  ######     ##     #######
+		            ########  ######## ########    ###     ######  ########  #######
+		            ##     ## ##       ##         ## ##   ##    ##    ##    ##     ##
+		            ##     ## ##       ##        ##   ##  ##          ##    ##     ##
+		            ########  ######   ######   ##     ## ##          ##    ##     ##
+		            ##   ##   ##       ##       ######### ##          ##    ##     ##
+		            ##    ##  ##       ##       ##     ## ##    ##    ##    ##     ##
+		            ##     ## ######## ##       ##     ##  ######     ##     #######
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-*/
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		 */
 
 		/*
 		 * Toute cette partie du code est équivalente à la partie au-dessus
@@ -308,350 +294,438 @@ public class PacmanController
 		 * Elle est gardée au cas-où il y aurait besoin de recomprendre l'algo au-dessus
 		 * où qu'un bug y est repéré car cette partie semble exempt de bug
 		 */
-		
+
 		/*switch (dir_actuelle)
-		{
-		case LEFT :
-			// s'il y a changement de case
-			if ((int)p.x != (int)(p.x - distance))
-			{
-				// si on a une demande de direction perpendiculaire
-				if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
 				{
-					// on récupère la case suivante en fonction de la direction demandée
-					if (this.derniere_commande == Direction.DOWN)
-						ge = labyrinthe.get(p.x, p.y - 1);
-					else
-						ge = labyrinthe.get(p.x, p.y + 1);
-
-					// si la case suivante est un obstacle
-					if (ge != null)
+				case LEFT :
+					// s'il y a changement de case
+					if ((int)p.x != (int)(p.x - distance))
 					{
-						// on ignore la demande
-						// et on regarde la case suivante dans la direction actuelle
-						ge = this.pacman.getWorld().getMaze().get(p.x - 1, p.y);
-
-						// si c'est un obstacle, on passe la direction à NONE
-						// et on aligne le pacman avec sa case actuelle
-						if (ge != null)
+						// si on a une demande de direction perpendiculaire
+						if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
 						{
-							p.x = (int)p.x;
-							this.pacman.setDirection(Direction.NONE);
+							// on récupère la case suivante en fonction de la direction demandée
+							if (this.derniere_commande == Direction.DOWN)
+								ge = labyrinthe.get(p.x, p.y - 1);
+							else
+								ge = labyrinthe.get(p.x, p.y + 1);
+
+							// si la case suivante est un obstacle
+							if (ge != null)
+							{
+								// on ignore la demande
+								// et on regarde la case suivante dans la direction actuelle
+								ge = this.pacman.getWorld().getMaze().get(p.x - 1, p.y);
+
+								// si c'est un obstacle, on passe la direction à NONE
+								// et on aligne le pacman avec sa case actuelle
+								if (ge != null)
+								{
+									p.x = (int)p.x;
+									this.pacman.setDirection(Direction.NONE);
+								}
+								// sinon on peut avancer
+								else
+									p.x -= distance;
+							}
+							// sinon si la case suivante est vide
+							else
+							{
+								// on aligne le pacman avec sa case actuelle
+								// et on change de direction
+								p.x = (int)p.x;
+								this.pacman.setDirection(this.derniere_commande);
+							}
+						}
+						// sinon si on n'a aucune demande
+						else
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x - 1, p.y);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on aligne le pacman avec la case suivante
+							if (ge != null)
+							{
+								p.x = (int)p.x;
+								this.pacman.setDirection(Direction.NONE);
+							}
+							// sinon on peut avancer
+							else
+								p.x -= distance;
+						}
+					}
+					// sinon on regarde si on est sur une intersection
+					else
+					{
+						// si on est sur une intersection
+						if ((int)p.x == p.x)
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x - 1, p.y);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on ne bouge pas
+							if (ge != null)
+								this.pacman.setDirection(Direction.NONE);
+							// sinon on peut avancer
+							else
+								p.x -= distance;
 						}
 						// sinon on peut avancer
 						else
 							p.x -= distance;
 					}
-					// sinon si la case suivante est vide
-					else
+					break;
+
+
+				case RIGHT :
+					// s'il y a changement de case
+					if ((int)p.x != (int)(p.x + distance))
 					{
-						// on aligne le pacman avec sa case actuelle
-						// et on change de direction
-						p.x = (int)p.x;
-						this.pacman.setDirection(this.derniere_commande);
-					}
-				}
-				// sinon si on n'a aucune demande
-				else
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x - 1, p.y);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on aligne le pacman avec la case suivante
-					if (ge != null)
-					{
-						p.x = (int)p.x;
-						this.pacman.setDirection(Direction.NONE);
-					}
-					// sinon on peut avancer
-					else
-						p.x -= distance;
-				}
-			}
-			// sinon on regarde si on est sur une intersection
-			else
-			{
-				// si on est sur une intersection
-				if ((int)p.x == p.x)
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x - 1, p.y);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on ne bouge pas
-					if (ge != null)
-						this.pacman.setDirection(Direction.NONE);
-					// sinon on peut avancer
-					else
-						p.x -= distance;
-				}
-				// sinon on peut avancer
-				else
-					p.x -= distance;
-			}
-			break;
-
-
-		case RIGHT :
-			// s'il y a changement de case
-			if ((int)p.x != (int)(p.x + distance))
-			{
-				// si on a une demande de direction perpendiculaire
-				if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
-				{
-					// on récupère la case suivante en fonction de la direction demandée
-					if (this.derniere_commande == Direction.DOWN)
-						ge = labyrinthe.get(p.x + 1, p.y - 1);
-					else
-						ge = labyrinthe.get(p.x + 1, p.y + 1);
-
-					// si la case suivante est un obstacle
-					if (ge != null)
-					{
-						// on ignore la demande
-						// et on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
-						// dans la direction actuelle
-						ge = labyrinthe.get(p.x + 2, p.y);
-
-						// si c'est un obstacle, on passe la direction à NONE
-						// et on aligne le pacman avec la case suivante
-						if (ge != null)
+						// si on a une demande de direction perpendiculaire
+						if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
 						{
-							p.x = (int)(p.x + distance);
-							this.pacman.setDirection(Direction.NONE);
+							// on récupère la case suivante en fonction de la direction demandée
+							if (this.derniere_commande == Direction.DOWN)
+								ge = labyrinthe.get(p.x + 1, p.y - 1);
+							else
+								ge = labyrinthe.get(p.x + 1, p.y + 1);
+
+							// si la case suivante est un obstacle
+							if (ge != null)
+							{
+								// on ignore la demande
+								// et on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
+								// dans la direction actuelle
+								ge = labyrinthe.get(p.x + 2, p.y);
+
+								// si c'est un obstacle, on passe la direction à NONE
+								// et on aligne le pacman avec la case suivante
+								if (ge != null)
+								{
+									p.x = (int)(p.x + distance);
+									this.pacman.setDirection(Direction.NONE);
+								}
+								// sinon on peut avancer
+								else
+									p.x += distance;
+							}
+							// sinon si la case suivante est vide
+							else
+							{
+								// on aligne le pacman avec la case suivante
+								// et on change de direction
+								p.x = (int)(p.x + distance);
+								this.pacman.setDirection(this.derniere_commande);
+							}
+						}
+						// sinon si on n'a aucune demande
+						else
+						{
+							// on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
+							// dans la direction actuelle
+							ge = this.pacman.getWorld().getMaze().get(p.x + 2, p.y);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on aligne le pacman avec la case suivante
+							if (ge != null)
+							{
+								p.x = (int)(p.x + distance);
+								this.pacman.setDirection(Direction.NONE);
+							}
+
+							// sinon on peut avancer
+							else
+								p.x += distance;
+						}
+					}
+					// sinon on regarde si on est sur une intersection
+					else
+					{
+						// si on est sur une intersection
+						if ((int)p.x == p.x)
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x + 1, p.y);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on ne bouge pas
+							if (ge != null)
+								this.pacman.setDirection(Direction.NONE);
+							// sinon on peut avancer
+							else
+								p.x += distance;
 						}
 						// sinon on peut avancer
 						else
 							p.x += distance;
 					}
-					// sinon si la case suivante est vide
-					else
+					break;
+
+
+				case DOWN :
+					// s'il y a changement de case
+					if ((int)p.y != (int)(p.y - distance))
 					{
-						// on aligne le pacman avec la case suivante
-						// et on change de direction
-						p.x = (int)(p.x + distance);
-						this.pacman.setDirection(this.derniere_commande);
-					}
-				}
-				// sinon si on n'a aucune demande
-				else
-				{
-					// on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
-					// dans la direction actuelle
-					ge = this.pacman.getWorld().getMaze().get(p.x + 2, p.y);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on aligne le pacman avec la case suivante
-					if (ge != null)
-					{
-						p.x = (int)(p.x + distance);
-						this.pacman.setDirection(Direction.NONE);
-					}
-
-					// sinon on peut avancer
-					else
-						p.x += distance;
-				}
-			}
-			// sinon on regarde si on est sur une intersection
-			else
-			{
-				// si on est sur une intersection
-				if ((int)p.x == p.x)
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x + 1, p.y);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on ne bouge pas
-					if (ge != null)
-						this.pacman.setDirection(Direction.NONE);
-					// sinon on peut avancer
-					else
-						p.x += distance;
-				}
-				// sinon on peut avancer
-				else
-					p.x += distance;
-			}
-			break;
-
-
-		case DOWN :
-			// s'il y a changement de case
-			if ((int)p.y != (int)(p.y - distance))
-			{
-				// si on a une demande de direction perpendiculaire
-				if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
-				{
-					// on récupère la case suivante en fonction de la direction demandée
-					if (this.derniere_commande == Direction.LEFT)
-						ge = labyrinthe.get(p.x - 1, p.y);
-					else
-						ge = labyrinthe.get(p.x + 1, p.y);
-
-					// si la case suivante est un obstacle
-					if (ge != null)
-					{
-						// on ignore la demande
-						// et on regarde la case suivante dans la direction actuelle
-						ge = labyrinthe.get(p.x, p.y - 1);
-
-						// si c'est un obstacle, on passe la direction à NONE
-						// et on aligne le pacman avec sa case actuelle
-						if (ge != null)
+						// si on a une demande de direction perpendiculaire
+						if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
 						{
-							p.y = (int)p.y;
-							this.pacman.setDirection(Direction.NONE);
+							// on récupère la case suivante en fonction de la direction demandée
+							if (this.derniere_commande == Direction.LEFT)
+								ge = labyrinthe.get(p.x - 1, p.y);
+							else
+								ge = labyrinthe.get(p.x + 1, p.y);
+
+							// si la case suivante est un obstacle
+							if (ge != null)
+							{
+								// on ignore la demande
+								// et on regarde la case suivante dans la direction actuelle
+								ge = labyrinthe.get(p.x, p.y - 1);
+
+								// si c'est un obstacle, on passe la direction à NONE
+								// et on aligne le pacman avec sa case actuelle
+								if (ge != null)
+								{
+									p.y = (int)p.y;
+									this.pacman.setDirection(Direction.NONE);
+								}
+								// sinon on peut avancer
+								else
+									p.y -= distance;
+							}
+							// sinon si la case suivante est vide
+							else
+							{
+								// on aligne le pacman avec sa case actuelle
+								// et on change de direction
+								p.y = (int)p.y;
+								this.pacman.setDirection(this.derniere_commande);
+							}
+						}
+						// sinon si on n'a aucune demande
+						else
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x, p.y - 1);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on aligne le pacman avec la case suivante
+							if (ge != null)
+							{
+								p.y = (int)p.y;
+								this.pacman.setDirection(Direction.NONE);
+							}
+							// sinon on peut avancer
+							else
+								p.y -= distance;
+						}
+					}
+					// sinon on regarde si on est sur une intersection
+					else
+					{
+						// si on est sur une intersection
+						if ((int)p.y == p.y)
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x, p.y - 1);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on ne bouge pas
+							if (ge != null)
+								this.pacman.setDirection(Direction.NONE);
+							// sinon on peut avancer
+							else
+								p.y -= distance;
 						}
 						// sinon on peut avancer
 						else
 							p.y -= distance;
 					}
-					// sinon si la case suivante est vide
-					else
+					break;
+
+
+				case UP :
+					// s'il y a changement de case
+					if ((int)p.y != (int)(p.y + distance))
 					{
-						// on aligne le pacman avec sa case actuelle
-						// et on change de direction
-						p.y = (int)p.y;
-						this.pacman.setDirection(this.derniere_commande);
-					}
-				}
-				// sinon si on n'a aucune demande
-				else
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x, p.y - 1);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on aligne le pacman avec la case suivante
-					if (ge != null)
-					{
-						p.y = (int)p.y;
-						this.pacman.setDirection(Direction.NONE);
-					}
-					// sinon on peut avancer
-					else
-						p.y -= distance;
-				}
-			}
-			// sinon on regarde si on est sur une intersection
-			else
-			{
-				// si on est sur une intersection
-				if ((int)p.y == p.y)
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x, p.y - 1);
-
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on ne bouge pas
-					if (ge != null)
-						this.pacman.setDirection(Direction.NONE);
-					// sinon on peut avancer
-					else
-						p.y -= distance;
-				}
-				// sinon on peut avancer
-				else
-					p.y -= distance;
-			}
-			break;
-
-
-		case UP :
-			// s'il y a changement de case
-			if ((int)p.y != (int)(p.y + distance))
-			{
-				// si on a une demande de direction perpendiculaire
-				if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
-				{
-					// on récupère la case suivante en fonction de la direction demandée
-					if (this.derniere_commande == Direction.LEFT)
-						ge = labyrinthe.get(p.x - 1, p.y + 1);
-					else
-						ge = labyrinthe.get(p.x + 1, p.y + 1);
-
-					// si la case suivante est un obstacle
-					if (ge != null)
-					{
-						// on ignore la demande
-						// et on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
-						// dans la direction actuelle
-						ge = labyrinthe.get(p.x, p.y + 2);
-
-						// si c'est un obstacle, on passe la direction à NONE
-						// et on aligne le pacman avec la case suivante
-						if (ge != null)
+						// si on a une demande de direction perpendiculaire
+						if (dir_actuelle.estDirectionPerpendiculaire(this.derniere_commande))
 						{
-							p.y = (int)(p.y + distance);
-							this.pacman.setDirection(Direction.NONE);
+							// on récupère la case suivante en fonction de la direction demandée
+							if (this.derniere_commande == Direction.LEFT)
+								ge = labyrinthe.get(p.x - 1, p.y + 1);
+							else
+								ge = labyrinthe.get(p.x + 1, p.y + 1);
+
+							// si la case suivante est un obstacle
+							if (ge != null)
+							{
+								// on ignore la demande
+								// et on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
+								// dans la direction actuelle
+								ge = labyrinthe.get(p.x, p.y + 2);
+
+								// si c'est un obstacle, on passe la direction à NONE
+								// et on aligne le pacman avec la case suivante
+								if (ge != null)
+								{
+									p.y = (int)(p.y + distance);
+									this.pacman.setDirection(Direction.NONE);
+								}
+								// sinon on peut avancer
+								else
+									p.y += distance;
+							}
+							// sinon si la case suivante est vide
+							else
+							{
+								// on aligne le pacman avec la case suivante
+								// et on change de direction
+								p.y = (int)(p.y + distance);
+								this.pacman.setDirection(this.derniere_commande);
+							}
+						}
+						// sinon si on n'a aucune demande
+						else
+						{
+							// on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
+							// dans la direction actuelle
+							ge = labyrinthe.get(p.x, p.y + 2);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on aligne le pacman avec la case suivante
+							if (ge != null)
+							{
+								p.y = (int)(p.y + distance);
+								this.pacman.setDirection(Direction.NONE);
+							}
+							// sinon on peut avancer
+							else
+								p.y += distance;
+						}
+					}
+					// sinon on regarde si on est sur une intersection
+					else
+					{
+						// si on est sur une intersection
+						if ((int)p.y == p.y)
+						{
+							// on regarde la case suivante dans la direction actuelle
+							ge = labyrinthe.get(p.x, p.y + 1);
+
+							// si c'est un obstacle, on passe la direction à NONE
+							// et on ne bouge pas
+							if (ge != null)
+								this.pacman.setDirection(Direction.NONE);
+							// sinon on peut avancer
+							else
+								p.y += distance;
 						}
 						// sinon on peut avancer
 						else
 							p.y += distance;
 					}
-					// sinon si la case suivante est vide
-					else
-					{
-						// on aligne le pacman avec la case suivante
-						// et on change de direction
-						p.y = (int)(p.y + distance);
-						this.pacman.setDirection(this.derniere_commande);
-					}
-				}
-				// sinon si on n'a aucune demande
-				else
-				{
-					// on regarde la case suivante (ici, 2 cases plus loin que l'actuelle)
-					// dans la direction actuelle
-					ge = labyrinthe.get(p.x, p.y + 2);
+					break;
 
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on aligne le pacman avec la case suivante
-					if (ge != null)
-					{
-						p.y = (int)(p.y + distance);
-						this.pacman.setDirection(Direction.NONE);
-					}
-					// sinon on peut avancer
-					else
-						p.y += distance;
-				}
-			}
-			// sinon on regarde si on est sur une intersection
-			else
-			{
-				// si on est sur une intersection
-				if ((int)p.y == p.y)
-				{
-					// on regarde la case suivante dans la direction actuelle
-					ge = labyrinthe.get(p.x, p.y + 1);
 
-					// si c'est un obstacle, on passe la direction à NONE
-					// et on ne bouge pas
-					if (ge != null)
-						this.pacman.setDirection(Direction.NONE);
-					// sinon on peut avancer
-					else
-						p.y += distance;
-				}
-				// sinon on peut avancer
-				else
-					p.y += distance;
-			}
+				case NONE :
+					return;
+				default :
+					// on ne devrait jamais tomber dans ce cas-là
+					System.out.println("Erreur direction");
+					break;
+				}*/
+	}
+
+
+	private void detectionCollisionPacGomme()
+	{
+		float pos_actuelle_abs = this.pacman.getPosition().x;
+		float pos_actuelle_ord = this.pacman.getPosition().y;
+		
+		float pos_cible_abs = pos_actuelle_abs;
+		float pos_cible_ord = pos_actuelle_ord;
+		
+		boolean verif_position = false;
+		
+		switch (this.pacman.getDirection())
+		{
+		case LEFT :
+			if (pos_actuelle_abs <= (0.6f + (int)pos_actuelle_abs))
+				verif_position = true;
 			break;
-
-
+		case RIGHT :
+			pos_cible_abs += 1f;
+			if (pos_actuelle_abs >= (0.4f + (int)pos_actuelle_abs))
+				verif_position = true;
+			break;
+		case DOWN :
+			if (pos_actuelle_ord <= (0.6f + (int)pos_actuelle_ord))
+				verif_position = true;
+			break;
+		case UP :
+			pos_cible_ord += 1f;
+			if (pos_actuelle_ord >= (0.4f + (int)pos_actuelle_ord))
+				verif_position = true;
+			break;
 		case NONE :
 			return;
 		default :
 			// on ne devrait jamais tomber dans ce cas-là
 			System.out.println("Erreur direction");
-			break;
-		}*/
+		}
+				
+		GameElement ge = this.pacman.getWorld().getMaze().get(pos_cible_abs, pos_cible_ord);
+		
+		if (ge instanceof PacGomme)
+		{
+			PacGomme p = (PacGomme)ge;
 
+			if (verif_position)
+				if (!p.estMangee())
+					p.seFaitManger();
+		}		
 	}
+
+/*
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+                     ########  ##     ## ########  ##       ####  ######
+                     ##     ## ##     ## ##     ## ##        ##  ##    ##
+                     ##     ## ##     ## ##     ## ##        ##  ##
+                     ########  ##     ## ########  ##        ##  ##
+                     ##        ##     ## ##     ## ##        ##  ##
+                     ##        ##     ## ##     ## ##        ##  ##    ##
+                     ##         #######  ########  ######## ####  ######
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+*/
+
+	public PacmanController(Pacman pacman)
+	{
+		this.pacman = pacman;
+		this.derniere_commande = Direction.NONE;//this.pacman.getDirection();
+	}
+
+
+	public void setDerniereCommande(Direction derniere_commande)
+	{
+		this.derniere_commande = derniere_commande;
+	}
+
+
+	public void update(float delta)
+	{
+		// si la méthode retourne false, on se déplace sur une case
+		// donc il est possible de rencontrer un pac-gomme 
+		if (this.detectionCollisionBloc(delta) == false)
+		{
+			this.detectionCollisionPacGomme();
+		}
+	}
+	
+	
 
 }

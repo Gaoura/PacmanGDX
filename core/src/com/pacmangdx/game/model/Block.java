@@ -20,9 +20,9 @@ public class Block extends MobileElement
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 	
-	public Block(Point2D.Float p)
+	public Block(Point2D.Float p, World w)
 	{
-		super(p, null);
+		super(p, w);
 	}
 	
 	@Override

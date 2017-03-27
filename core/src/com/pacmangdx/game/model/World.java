@@ -29,6 +29,7 @@ public class World implements Iterable<GameElement>
 
 	private Pacman pac;
 	private Maze laby;
+	private int score;
 
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,10 +52,12 @@ public class World implements Iterable<GameElement>
 		if (p != null)
 		{
 			this.pac = new Pacman(p, this);
+			this.pac.setDirection(Direction.LEFT);
 		}
-
 		else
 			System.out.println("Erreur création Pacman");
+		
+		this.score = 0;
 
 	}
 
@@ -97,7 +100,6 @@ public class World implements Iterable<GameElement>
 	public int getWidth()
 	{
 		return laby.getWidth();
-
 	}
 
 	public Maze getMaze()
@@ -108,6 +110,16 @@ public class World implements Iterable<GameElement>
 	public Pacman getPacman()
 	{
 		return this.pac;
+	}
+	
+	public void augmenterScore(int points)
+	{
+		this.score += points;
+	}
+	
+	public int getScore()
+	{
+		return this.score;
 	}
 
 	@Override
