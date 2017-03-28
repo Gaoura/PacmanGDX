@@ -685,7 +685,10 @@ public class PacmanController
 
 			if (verif_position)
 				if (!p.estMangee())
+				{
 					p.seFaitManger();
+					this.pacman.getWorld().augmenterScore(1);
+				}
 		}		
 	}
 

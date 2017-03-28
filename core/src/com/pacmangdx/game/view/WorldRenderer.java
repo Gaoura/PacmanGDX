@@ -1,8 +1,12 @@
 package com.pacmangdx.game.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.pacmangdx.game.controllers.ClavierEcouteur;
 import com.pacmangdx.game.controllers.PacmanController;
 import com.pacmangdx.game.model.GameElement;
@@ -29,6 +33,7 @@ public class WorldRenderer
 	private OrthographicCamera camera;
 	private World world;
 	private PacmanController pacman;
+	private BitmapFont font; // guide : http://www.programmingmoney.com/custom-bitmap-font-for-libgdx/
 
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +53,7 @@ public class WorldRenderer
 	{
 		this.world = w;
 		this.spriteBatch = new SpriteBatch();
+		this.font = new BitmapFont(Gdx.files.internal("ScoreBoardFont2.fnt"));
 
 		this.camera = new OrthographicCamera();
 		this.pacman = new PacmanController(this.world.getPacman());
@@ -59,28 +65,36 @@ public class WorldRenderer
 		TextureFactory tf = TextureFactory.getInstance();
 		this.spriteBatch.setProjectionMatrix(this.camera.combined);
 		float largeur = ((float)Gdx.graphics.getWidth()) / this.world.getWidth();
-		float hauteur = ((float)Gdx.graphics.getHeight()) / this.world.getHeight();
+		float hauteur = ((float)Gdx.graphics.getHeight()) / (this.world.getHeight()+1);
 		this.pacman.update(delta);
+
 		
 		this.spriteBatch.begin();
 			this.spriteBatch.disableBlending();
+			
+			String s = "Score : " + new Integer(this.world.getScore()).toString();
+						
 			for (GameElement ge : this.world)
 			{
 				this.spriteBatch.draw(
 					tf.getTexture(ge, delta),
 					(ge.getPosition().x * largeur),
-					(ge.getPosition().y * hauteur),
+					(ge.getPosition().y * (hauteur)),
 					largeur,
 					hauteur);
 			}
-
+			font.draw(spriteBatch, s, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()-1, 0f, Align.center, false);
+			
+			
+				//font.draw(spriteBatch, "Félicitations", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, 0f, Align.center, false);
 		this.spriteBatch.end();
-
 	}
 
 	public void dispose()
 	{
 		this.spriteBatch.dispose();
+		this.font.dispose();
+		
 	}
 
 	public void resize(int width, int height)

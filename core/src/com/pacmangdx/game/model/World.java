@@ -30,6 +30,7 @@ public class World implements Iterable<GameElement>
 	private Pacman pac;
 	private Maze laby;
 	private int score;
+	private int nb_pac_gommes;
 
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,10 @@ public class World implements Iterable<GameElement>
 */
 
 	public World()
-	{
+	{		
+		this.score = 0;
+		this.nb_pac_gommes = 0;
+		
 		this.laby = new Maze(this);
 		Point2D.Float p = newPacman();
 		if (p != null)
@@ -56,8 +60,6 @@ public class World implements Iterable<GameElement>
 		}
 		else
 			System.out.println("Erreur création Pacman");
-		
-		this.score = 0;
 
 	}
 
@@ -120,6 +122,21 @@ public class World implements Iterable<GameElement>
 	public int getScore()
 	{
 		return this.score;
+	}
+
+	public int getNbPacGommes()
+	{
+		return this.nb_pac_gommes;
+	}
+
+	public void incrementerNbPacGommes()
+	{
+		this.nb_pac_gommes++;
+	}
+	
+	public void decrementerNbPacGommes()
+	{
+		this.nb_pac_gommes--;
 	}
 
 	@Override

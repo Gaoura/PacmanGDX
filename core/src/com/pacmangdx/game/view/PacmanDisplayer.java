@@ -5,20 +5,48 @@ import com.pacmangdx.game.model.Pacman;
 
 public class PacmanDisplayer
 {
+/*
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+                ########  ########  #### ##     ##    ###    ######## ########
+                ##     ## ##     ##  ##  ##     ##   ## ##      ##    ##
+                ##     ## ##     ##  ##  ##     ##  ##   ##     ##    ##
+                ########  ########   ##  ##     ## ##     ##    ##    ######
+                ##        ##   ##    ##   ##   ##  #########    ##    ##
+                ##        ##    ##   ##    ## ##   ##     ##    ##    ##
+                ##        ##     ## ####    ###    ##     ##    ##    ########
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+*/
+
 	private float compteur;
 	private Texture pacman[];
 	private int derniere_texture;
+
+/*
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+                     ########  ##     ## ########  ##       ####  ######
+                     ##     ## ##     ## ##     ## ##        ##  ##    ##
+                     ##     ## ##     ## ##     ## ##        ##  ##
+                     ########  ##     ## ########  ##        ##  ##
+                     ##        ##     ## ##     ## ##        ##  ##
+                     ##        ##     ## ##     ## ##        ##  ##    ##
+                     ##         #######  ########  ######## ####  ######
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+*/
 
 	public PacmanDisplayer(Texture p[])
 	{
 		this.compteur = 0f;
 		this.pacman = p;
 	}
-	
+
 	public void augmenterCompteur(float temps)
 	{
 		this.compteur += temps;
-		
+
 		if (this.compteur > 0.5f)
 			this.compteur = 0f;
 	}
@@ -45,10 +73,10 @@ public class PacmanDisplayer
 			System.out.println("On ne devrait jamais arriver ici");
 			break;
 		}
-			
+
 		if (compteur > 0.25f)
 			this.derniere_texture++;
-		
+
 		return this.pacman[this.derniere_texture];
 	}
 }

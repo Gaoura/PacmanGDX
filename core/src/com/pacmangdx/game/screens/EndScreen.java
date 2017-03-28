@@ -1,15 +1,15 @@
 package com.pacmangdx.game.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.pacmangdx.game.model.World;
-import com.pacmangdx.game.view.WorldRenderer;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Align;
 
-public class GameScreen implements Screen
+public class EndScreen implements Screen
 {
-
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,10 +24,10 @@ public class GameScreen implements Screen
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 
-	private World world;
-	private Game game;
-	private WorldRenderer renderer;
-	
+	private SpriteBatch spriteBatch;
+	private OrthographicCamera camera;
+	private BitmapFont font; // guide : http://www.programmingmoney.com/custom-bitmap-font-for-libgdx/
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,48 +42,62 @@ public class GameScreen implements Screen
 /////////////////////////////////////////////////////////////////////////////////////////////
 */
 
-	public GameScreen(Game g)
+	public EndScreen()
 	{
-		this.world = new World();
-		this.game = g;
-		this.renderer = new WorldRenderer(this.world);
+		this.spriteBatch = new SpriteBatch();
+		this.font = new BitmapFont(Gdx.files.internal("ScoreBoardFont2.fnt"));
+		this.camera = new OrthographicCamera();
 	}
-
-	@Override
-	public void show() {}
 
 	@Override
 	public void render(float delta)
 	{
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if (this.world.getNbPacGommes() != 0)
-			this.renderer.render(delta);
-		else
-		{
-			this.dispose();
-			this.game.setScreen(new EndScreen());
-		}		
+		this.spriteBatch.setProjectionMatrix(this.camera.combined);
+
+		this.spriteBatch.begin();
+			this.spriteBatch.disableBlending();
+			font.draw(spriteBatch, "Félicitations", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, 0f, Align.center, false);
+		this.spriteBatch.end();
 	}
 
 	@Override
 	public void resize(int width, int height)
 	{
-		this.renderer.resize(width, height);
+		this.camera.setToOrtho(false, width, height);
+		this.camera.position.set(width / 2, height / 2, 0);
+		this.camera.update();
 	}
-
-	@Override
-	public void pause() {}
-
-	@Override
-	public void resume() {}
-
-	@Override
-	public void hide() {}
 
 	@Override
 	public void dispose()
 	{
-		this.renderer.dispose();
+		this.spriteBatch.dispose();
+		this.font.dispose();
 	}
+
+
+
+	@Override
+	public void show() {}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

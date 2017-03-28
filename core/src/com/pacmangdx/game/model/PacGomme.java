@@ -37,6 +37,7 @@ public class PacGomme extends GameElement
 	public PacGomme(Float p, World w)
 	{
 		super(p, w);
+		this.world.incrementerNbPacGommes();
 	}
 
 	public boolean estMangee()
@@ -47,6 +48,7 @@ public class PacGomme extends GameElement
 	public void seFaitManger()
 	{
 		this.mangee = true;
+		this.world.decrementerNbPacGommes();
 	}
 
 	@Override

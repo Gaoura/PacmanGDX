@@ -22,6 +22,6 @@ public class Pacman extends MobileElement
 	public Pacman(Point2D.Float p, World w)
 	{
 		super(p, w);
-		this.distance_par_sec = 3f;
+		this.distance_par_sec = 10f;
 	}
 }

@@ -8,6 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "PacmanGDX";
+		config.height = 750; 
+		config.width = 685;
 		new LwjglApplication(new PacmanGDX(), config);
 	}
 }
