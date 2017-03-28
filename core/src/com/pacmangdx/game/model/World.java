@@ -9,6 +9,9 @@ import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.pacmangdx.game.controllers.AleatoireStrategie;
+import com.pacmangdx.game.controllers.AlternativeStrategie;
+import com.pacmangdx.game.controllers.PlusCourtAxeStrategie;
 
 public class World implements Iterable<GameElement>
 {
@@ -28,9 +31,72 @@ public class World implements Iterable<GameElement>
 */
 
 	private Pacman pac;
+	private Fantome fantome1;
+	private Fantome fantome2;
+	private Fantome fantome3;
+	//private Fantome fantome4;
 	private Maze laby;
 	private int score;
 	private int nb_pac_gommes;
+	
+
+	private void newPersonnages()
+	{
+		boolean pacman = false;
+		boolean fantome1 = false;
+		boolean fantome2 = false;
+		boolean fantome3 = false;
+		FileHandle fh = Gdx.files.internal("map2.txt");
+		BufferedReader br = new BufferedReader(fh.reader());
+		String line;
+		ArrayList<String> list = new ArrayList<String>();
+		try
+		{
+			while((line = br.readLine()) != null)
+				list.add(line);
+
+			int j = 0;
+			while(j < list.size())
+			{
+				line = list.get(j);
+				int i;
+				for (i = 0; i < line.length(); i++)
+					switch (line.charAt(i))
+					{
+					case 'C' :
+						this.pac = new Pacman(new Point2D.Float(i, list.size() - 1 - j), this);
+						pacman = true;
+						break;
+					case '1' :
+						this.fantome1 = new Fantome(new Point2D.Float(i, list.size() - 1 - j),
+														this, new AleatoireStrategie());
+						fantome1 = true;
+						break;
+					case '2' :
+						this.fantome2 = new Fantome(new Point2D.Float(i, list.size() - 1 - j),
+														this, new PlusCourtAxeStrategie());
+						fantome2 = true;
+						break;
+					case '3' :
+						this.fantome3 = new Fantome(new Point2D.Float(i, list.size() - 1 - j),
+														this, new AlternativeStrategie());
+						fantome3 = true;
+						break;
+					case '4' :
+					default:
+						break;
+					}
+				j++;
+			}
+			
+			if (!(pacman && fantome1 && fantome2 && fantome3))
+				System.out.println("Erreur création personnages");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 /*
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,47 +116,13 @@ public class World implements Iterable<GameElement>
 	{		
 		this.score = 0;
 		this.nb_pac_gommes = 0;
-		
 		this.laby = new Maze(this);
-		Point2D.Float p = newPacman();
-		if (p != null)
-		{
-			this.pac = new Pacman(p, this);
-			this.pac.setDirection(Direction.LEFT);
-		}
-		else
-			System.out.println("Erreur création Pacman");
-
-	}
-
-	public Point2D.Float newPacman()
-	{
-		FileHandle fh = Gdx.files.internal("map2.txt");
-		BufferedReader br = new BufferedReader(fh.reader());
-		String line;
-		ArrayList<String> list = new ArrayList<String>();
-		try
-		{
-			while((line = br.readLine()) != null)
-				list.add(line);
-
-			int j = 0;
-			while(j < list.size())
-			{
-				line = list.get(j);
-				int i;
-				for (i = 0; i < line.length(); i++)
-					if (line.charAt(i) == 'C')
-						return new Point2D.Float(i, list.size() - 1 - j);
-				j++;
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		return null;
+		this.newPersonnages();
+		
+		this.pac.setDirection(Direction.NONE);
+		this.fantome1.setDirection(Direction.UP);
+		this.fantome2.setDirection(Direction.UP);
+		this.fantome3.setDirection(Direction.UP);
 	}
 
 	public int getHeight()
@@ -138,6 +170,21 @@ public class World implements Iterable<GameElement>
 	{
 		this.nb_pac_gommes--;
 	}
+	
+	public Fantome getFantome1()
+	{
+		return this.fantome1;
+	}
+	
+	public Fantome getFantome2()
+	{
+		return this.fantome2;
+	}
+	
+	public Fantome getFantome3()
+	{
+		return this.fantome3;
+	}
 
 	@Override
 	public Iterator<GameElement> iterator()
@@ -165,11 +212,8 @@ public class World implements Iterable<GameElement>
 						if (iterator.hasNext())
 							return iterator.hasNext();
 						else
-							// sinon si on n'a pas encore retourner pacman
-							if (i == 0)
-								return pac != null;
-							else
-								return false;
+							// sinon on regarde si on a retourné tous les persos 
+							return i < 4;
 					}
 
 					/*@Override
@@ -196,12 +240,23 @@ public class World implements Iterable<GameElement>
 						if (iterator.hasNext())
 							return iterator.next();
 						else
-							if (i == 0)
+							switch(i)
 							{
+							case 0 :
 								i++;
 								return pac;
+							case 1 :
+								i++;
+								return fantome1;
+							case 2 :
+								i++;
+								return fantome2;
+							case 3 :
+								i++;
+								return fantome3;
+							default :
+								return null;
 							}
-						return null;
 					}
 				};
 	}

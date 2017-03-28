@@ -1,13 +1,12 @@
 package com.pacmangdx.game.view;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.pacmangdx.game.controllers.ClavierEcouteur;
+import com.pacmangdx.game.controllers.FantomesController;
 import com.pacmangdx.game.controllers.PacmanController;
 import com.pacmangdx.game.model.GameElement;
 import com.pacmangdx.game.model.World;
@@ -33,6 +32,7 @@ public class WorldRenderer
 	private OrthographicCamera camera;
 	private World world;
 	private PacmanController pacman;
+	private FantomesController fantomes;
 	private BitmapFont font; // guide : http://www.programmingmoney.com/custom-bitmap-font-for-libgdx/
 
 /*
@@ -57,6 +57,10 @@ public class WorldRenderer
 
 		this.camera = new OrthographicCamera();
 		this.pacman = new PacmanController(this.world.getPacman());
+		this.fantomes = new FantomesController();
+		this.fantomes.add(this.world.getFantome1());
+		this.fantomes.add(this.world.getFantome2());
+		this.fantomes.add(this.world.getFantome3());
 		Gdx.input.setInputProcessor(new ClavierEcouteur(this.pacman));
 	}
 
@@ -67,7 +71,7 @@ public class WorldRenderer
 		float largeur = ((float)Gdx.graphics.getWidth()) / this.world.getWidth();
 		float hauteur = ((float)Gdx.graphics.getHeight()) / (this.world.getHeight()+1);
 		this.pacman.update(delta);
-
+		this.fantomes.update(delta);
 		
 		this.spriteBatch.begin();
 			this.spriteBatch.disableBlending();
@@ -83,10 +87,8 @@ public class WorldRenderer
 					largeur,
 					hauteur);
 			}
+			
 			font.draw(spriteBatch, s, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()-1, 0f, Align.center, false);
-			
-			
-				//font.draw(spriteBatch, "Félicitations", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2, 0f, Align.center, false);
 		this.spriteBatch.end();
 	}
 
@@ -94,7 +96,6 @@ public class WorldRenderer
 	{
 		this.spriteBatch.dispose();
 		this.font.dispose();
-		
 	}
 
 	public void resize(int width, int height)

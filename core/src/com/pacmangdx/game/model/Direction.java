@@ -44,6 +44,24 @@ public enum Direction
         }
     }
 	
+	public Direction getDirectionOpposee()
+	{
+		switch (this)
+        {
+        case LEFT :
+        	return RIGHT;
+        case RIGHT :
+        	return LEFT;
+        case DOWN :
+        	return UP;        	
+        case UP :
+        	return DOWN;
+        case NONE :
+        default :
+        	return NONE;
+        }
+	}
+	
 	public boolean estDirectionPerpendiculaire(Direction d)
 	{
         switch (this)
