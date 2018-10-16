@@ -43,6 +43,7 @@ public class Fantome extends MobileElement
 		super(p, w);
 		this.strategie = s;
 		this.setEtat(Etat.VIVANT);
+		this.distance_par_sec = 3f; // ca devrait etre fait plus proprement
 	}
 	
 	public Direction choixDirection()
